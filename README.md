@@ -1,4 +1,4 @@
-# git-sync
+# github-sync
 
 Simple PHP script (and instructions) for using git to keep a web project in sync with a Github repository.
 
