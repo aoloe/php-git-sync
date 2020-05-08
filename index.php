@@ -38,19 +38,25 @@ $data = json_decode($data, true);
 
 // 'HTTP_X_HUB_SIGNATURE' => 'sha1=' . $signature,
 
+$repository = $data['repository']['full_name'];
+
+if (!array_key_exists($repository, $config['target'])) {
+    http_response_code(403);
+    die('unsupported repository: '. $repository);
+}
 
 $branch = explode('/', $data['ref'])[2];
 
-if (!array_key_exists($branch, $config['target'])) {
+if (!array_key_exists($branch, $config['target'][$repository])) {
     http_response_code(403);
     die('unsupported branch: '. $branch);
 }
 
-if (is_null($config['target'])) {
+if (is_null($config['target'][$repository])) {
     die('ignored branch');
 }
 
-$path = rtrim($config['target'][$branch], '/');
+$path = rtrim($config['target'][$repository][$branch], '/');
 
 if ($path === '' || !is_dir($path)) {
     http_response_code(403);
