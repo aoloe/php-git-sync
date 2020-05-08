@@ -1,60 +1,42 @@
 # git-sync
 
-Simplest PHP script (and instructions) for using git to keep in sync with a git repository.
+Simple PHP script (and instructions) for using git to keep a web project in sync with a Github repository.
+
+It uses `git reset` and `git pull` to to force the _tracked_ files on your server to match the ones in the Github repository:
+
+- It will only reset files that are tracked through Git.
+- It won't change any other files.
+- Local changes in the tracked files will be undone.
+
+Git must be installed on the server.
+
+You can use one sync script for multiple projects and branches, each in their own directory.
+
+For your safety, only use this script for actions that are non destructive and which could be triggered at anytime by anybody from anywhere in the internet.
 
 ## Installing
 
-- add this script to your website (as an example as `sync/index.php`).
-- create a `config.php` based on `config-demo.php`.
+- Add this script to your website (as an example as `sync/index.php`).
+- Create a `config.php` based on `config-demo.php`.
 
 ## Setup the webhook on Github
 
-- In the settings, add a webhook targetting this PHP script.
-  - url: path to this script (`http://your-server.org/sync/`)
-  - select json as the content type(does not really care)
-  - secret: ... does not seem to be in the json payload
-- each time your repository will be pushed, it will be deployed (pulled...) to the server
+- In the settings, add a webhook targeting this PHP script.
+  - url: path to this script (`http://your-server.org/sync/`)  
+    (the final `/` might matter).
+  - Select json as the content type.
+  - Define a secret (you will put the same in your `config.php` file.
+- Each time your repository gets pushed, a `git reset` it will be triggered on your server.
+
+## Todo
+
+- support other commands (mostly a call to shell scripts) after having synced.
 
 ## Resources
 
+- <https://gist.github.com/jplitza/88d64ce351d38c2f4198>: A basic PHP webhook handler for Github, just verifying the signature and some variables before calling another command to do the actual work
 - https://developer.github.com/v3/guides/managing-deploy-keys/
 - https://gist.github.com/zhujunsan/a0becf82ade50ed06115
 - https://www.justinsilver.com/technology/github-multiple-repository-ssh-deploy-keys/
 - https://gist.github.com/jexchan/2351996
 - https://stackoverflow.com/questions/4565700/specify-private-ssh-key-to-use-when-executing-shell-command-with-or-without-ruby
-
-## Notes
-
-/*
-setup git over https
-
-- add this script to your repository (as an example as `sync/index.php`)
-- `git clone` the repository on the server
-- setup a webhook targetting this php script
-  - url: path to this script (`http://libregraphicsmeeting.org/2018/sync/`)
-  - type json (does not really care)
-  - secret: ... does not seem to be in the json payload
-- each time your repository will be pushed, it will be deployed (pulled...) to the server
-
-
-setup git over ssh (does not work for tuxfamily.org):
-
-- setup webhook
-- url: http://libregraphicsmeeting.org/2018/sync/
-- type: json
-- secret: asecret
-- just the push event
-- use ssh-keygen to create a pair of ssh keys in the same director where your script is located
-- upload the public key as a deploy key for the repository
-- `ssh -i `id_rsa` git@github.com` should give the friendly message
-  `Hi {user}! You've successfully authenticated, but GitHub does not provide shell access.`
-- fail: tuxfamily seems to be blocking outbound requests.
-
-
-*/
-
-// debug information to test if the script is working
-// file_put_contents("log.txt", json_encode($_REQUEST));
-// $data = json_decode(file_get_contents('php://input'), true);
-// print_r($data);
-// file_put_contents("json.txt", json_encode($data));
