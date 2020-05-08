@@ -1,15 +1,15 @@
 <?php
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 header("Content-Type: text/plain");
 
 $config = include('config.php');
 
 $hub_signature = array_key_exists('HTTP_X_HUB_SIGNATURE', $_SERVER) ? $_SERVER['HTTP_X_HUB_SIGNATURE'] : '';
-$hub_action = array_key_exists('HTTP_X_GITHUB_EVENT', $_SERVER) ? $_SERVER['HTTP_X_GITHUB_EVENT'] : null; //  => 'push'
+$hub_action = array_key_exists('HTTP_X_GITHUB_EVENT', $_SERVER) ? $_SERVER['HTTP_X_GITHUB_EVENT'] : null;
 
 if (is_null($hub_action)) {
     http_response_code(403);
@@ -17,6 +17,7 @@ if (is_null($hub_action)) {
 }
 
 $data = file_get_contents('php://input');
+// file_put_contents("json.txt", json_encode($data));
 
 $signature = hash_hmac('sha1', $data, $config['secret']);
 
@@ -35,8 +36,6 @@ if ($hub_action !== 'push') {
 }
 
 $data = json_decode($data, true);
-
-// 'HTTP_X_HUB_SIGNATURE' => 'sha1=' . $signature,
 
 $repository = $data['repository']['full_name'];
 
@@ -67,9 +66,5 @@ if (!is_dir($path.'/.git')) {
     http_response_code(403);
     die('the target path is not a git repository: '. $path);
 }
-
-// logging
-// file_put_contents("log.txt", json_encode($_REQUEST));
-// file_put_contents("json.txt", json_encode($data));
 
 shell_exec( 'cd '.$path.' && git reset --hard HEAD && git pull' );
