@@ -40,3 +40,4 @@ For your safety, only use this script for actions that are non destructive and w
 - https://www.justinsilver.com/technology/github-multiple-repository-ssh-deploy-keys/
 - https://gist.github.com/jexchan/2351996
 - https://stackoverflow.com/questions/4565700/specify-private-ssh-key-to-use-when-executing-shell-command-with-or-without-ruby
+- remove the local history: <https://stackoverflow.com/a/37099824/5239250>

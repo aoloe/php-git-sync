@@ -68,3 +68,4 @@ if (!is_dir($path.'/.git')) {
 }
 
 shell_exec( 'cd '.$path.' && git reset --hard HEAD && git pull' );
+shell_exec( 'cd '.$path.' && git fetch --depth=1 && git reflog expire --expire-unreachable=now --all && git gc --aggressive --prune=all' );
