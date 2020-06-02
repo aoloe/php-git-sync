@@ -2,6 +2,10 @@
 
 Simple PHP script (and instructions) for using git to keep a web project in sync with a Github repository.
 
+> This is an unfinished effort to do the sync without using git.  
+> The direction seems to be the good one, but I fear of what happens if messages get lost.  
+> How to restore a sane state?
+
 It uses `git reset` and `git pull` to to force the _tracked_ files on your server to match the ones in the Github repository:
 
 - It will only reset files that are tracked through Git.
