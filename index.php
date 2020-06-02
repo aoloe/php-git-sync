@@ -17,7 +17,7 @@ if (is_null($hub_action)) {
 }
 
 $data = file_get_contents('php://input');
-file_put_contents("json.txt", $data);
+file_put_contents("log.json", $data);
 
 $signature = hash_hmac('sha1', $data, $config['secret']);
 
@@ -61,6 +61,39 @@ if ($path === '' || !is_dir($path)) {
     http_response_code(403);
     die('invalid target path: '. $path);
 }
+
+// if (!file_exists($path.'/git-sync')) {
+//     die('the target path is not managed through git-sync: '. $path);
+// }
+
+if (!array_key_exists('commits', $data) || empty($data['commits'])) {
+    http_response_code(403);
+    die('the request does not contain any commits');
+}
+
+$actions = [];
+
+foreach ($data['commits'] as $commit) {
+    foreach (array_merge($commit['added'], $commit['modified']) as $file) {
+        // - https://raw.githubusercontent.com/aoloe/test-sync/master/README.md
+        $tmp_file = tempnam(sys_get_temp_dir(), 'tmp-git-sync');
+        $status = file_put_contents($tmp_file, fopen(
+            "https://raw.githubusercontent.com/{$repository}/{$branch}/{$file}", 'rb'));
+        if ($status === false) {
+            http_response_code(403);
+            die('could not get the file from the git repository');
+        }
+        // $file_data = file_get_contents(
+        //     "https://raw.githubusercontent.com/{$repository}/{$branch}/{$file}");
+        $action[$file] = $tmp_file;
+    }
+    foreach ($commit['removed'] as $file) {
+        $action[$file] = null;
+    }
+}
+
+file_put_contents("log-action.json", json_encode($action));
+
 
 if (!is_dir($path.'/.git')) {
     http_response_code(403);
