@@ -17,7 +17,7 @@ if (is_null($hub_action)) {
 }
 
 $data = file_get_contents('php://input');
-// file_put_contents("json.txt", json_encode($data));
+file_put_contents("json.txt", $data);
 
 $signature = hash_hmac('sha1', $data, $config['secret']);
 
